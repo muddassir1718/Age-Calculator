@@ -951,6 +951,8 @@ export default function App() {
                       id="startDay"
                       name="startDay"
                       type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="DD"
                       value={formData.startDay}
                       onChange={handleChange}
@@ -974,6 +976,8 @@ export default function App() {
                       id="startMonth"
                       name="startMonth"
                       type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="MM"
                       value={formData.startMonth}
                       onChange={handleChange}
@@ -997,6 +1001,8 @@ export default function App() {
                       id="startYear"
                       name="startYear"
                       type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="YYYY"
                       value={formData.startYear}
                       onChange={handleChange}
@@ -1037,6 +1043,8 @@ export default function App() {
                           id="endDay"
                           name="endDay"
                           type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           placeholder="DD"
                           value={formData.endDay}
                           onChange={handleChange}
@@ -1060,6 +1068,8 @@ export default function App() {
                           id="endMonth"
                           name="endMonth"
                           type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           placeholder="MM"
                           value={formData.endMonth}
                           onChange={handleChange}
@@ -1083,6 +1093,8 @@ export default function App() {
                           id="endYear"
                           name="endYear"
                           type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           placeholder="YYYY"
                           value={formData.endYear}
                           onChange={handleChange}
@@ -1145,20 +1157,29 @@ export default function App() {
             </div>
           </form>
 
-          {/* Primary Results Block (Classic italic Georgia setup) */}
-          <div className="results flex flex-col py-6">
-            <div className="result-line text-6xl sm:text-7xl md:text-[104px] leading-[1.05] tracking-tight hover:translate-x-2 transition-transform duration-300">
+          {/* Primary Results Block (Classic italic Georgia setup - beautifully centered and mobile responsive) */}
+          <div className="results flex flex-col items-center justify-center text-center py-8 md:py-12 gap-2 md:gap-4 w-full select-none">
+            <motion.div 
+              whileHover={{ scale: 1.03 }}
+              className="result-line justify-center text-4xl min-[360px]:text-5xl sm:text-7xl md:text-8xl lg:text-[104px] leading-none tracking-tight transition-transform duration-300 w-full"
+            >
               <AnimatedNumber value={results.years} />
               <span className="text-text-main font-bold select-none">{dict.yearsUnit}</span>
-            </div>
-            <div className="result-line text-6xl sm:text-7xl md:text-[104px] leading-[1.05] tracking-tight hover:translate-x-2 transition-transform duration-300">
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.03 }}
+              className="result-line justify-center text-4xl min-[360px]:text-5xl sm:text-7xl md:text-8xl lg:text-[104px] leading-none tracking-tight transition-transform duration-300 w-full"
+            >
               <AnimatedNumber value={results.months} />
               <span className="text-text-main font-bold select-none">{dict.monthsUnit}</span>
-            </div>
-            <div className="result-line text-6xl sm:text-7xl md:text-[104px] leading-[1.05] tracking-tight hover:translate-x-2 transition-transform duration-300">
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.03 }}
+              className="result-line justify-center text-4xl min-[360px]:text-5xl sm:text-7xl md:text-8xl lg:text-[104px] leading-none tracking-tight transition-transform duration-300 w-full"
+            >
               <AnimatedNumber value={results.days} />
               <span className="text-text-main font-bold select-none">{dict.daysUnit}</span>
-            </div>
+            </motion.div>
           </div>
         </div>
 
