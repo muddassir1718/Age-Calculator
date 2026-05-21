@@ -4,8 +4,12 @@
  */
 
 import { motion, AnimatePresence } from "motion/react";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { calculateAge, isFutureDate, isValidDate } from "./utils/dateUtils";
+import { FireworksCanvas } from "./components/FireworksCanvas";
+import { ZodiacThemeBackground, ZodiacElement } from "./components/ZodiacThemeBackground";
+import { BirthdayGreetingOverlay } from "./components/BirthdayGreetingOverlay";
+import { CalendarSyncWidget } from "./components/CalendarSyncWidget";
 import { 
   Moon, 
   Sun, 
@@ -212,6 +216,34 @@ function getZodiacSign(day: number, month: number, lang: 'en' | 'bn') {
   return lang === 'en' ? matched.nameEn : matched.nameBn;
 }
 
+// Zodiac Sign finder logic in stable English
+function getZodiacSignEnglish(day: number, month: number) {
+  const zodiacs = [
+    { nameEn: "Capricorn", start: [12, 22], end: [1, 19] },
+    { nameEn: "Aquarius", start: [1, 20], end: [2, 18] },
+    { nameEn: "Pisces", start: [2, 19], end: [3, 20] },
+    { nameEn: "Aries", start: [3, 21], end: [4, 19] },
+    { nameEn: "Taurus", start: [4, 20], end: [5, 20] },
+    { nameEn: "Gemini", start: [5, 21], end: [6, 20] },
+    { nameEn: "Cancer", start: [6, 21], end: [7, 22] },
+    { nameEn: "Leo", start: [7, 23], end: [8, 22] },
+    { nameEn: "Virgo", start: [8, 23], end: [9, 22] },
+    { nameEn: "Libra", start: [9, 23], end: [10, 22] },
+    { nameEn: "Scorpio", start: [10, 23], end: [11, 21] },
+    { nameEn: "Sagittarius", start: [11, 22], end: [12, 21] }
+  ];
+
+  const target = zodiacs.find(z => {
+    const [startM, startD] = z.start;
+    const [endM, endD] = z.end;
+    if (month === startM && day >= startD) return true;
+    if (month === endM && day <= endD) return true;
+    return false;
+  });
+
+  return (target || zodiacs[0]).nameEn;
+}
+
 // Next Birthday breakdown finder (relative to today or target endpoint)
 function getNextBirthdayCountdown(day: number, month: number, baseDateInput?: Date) {
   const today = baseDateInput || new Date();
@@ -319,6 +351,34 @@ export default function App() {
   const [accent, setAccent] = useState('#854DFF');
   const [motionEnabled, setMotionEnabled] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+  const [triggerCelebration, setTriggerCelebration] = useState(0);
+
+  // Scroll detection for next birthday greeting overlay & fires
+  const [showGreetingOverlay, setShowGreetingOverlay] = useState(false);
+  const [hasTriggeredGreeting, setHasTriggeredGreeting] = useState(false);
+  const nextBirthdayRef = useRef<HTMLDivElement | null>(null);
+
+  const activeZodiacElement = useMemo<ZodiacElement>(() => {
+    if (results.years === null || !formData.startDay || !formData.startMonth || !formData.startYear) {
+      return "none";
+    }
+    const sd = parseInt(formData.startDay);
+    const sm = parseInt(formData.startMonth);
+    const sy = parseInt(formData.startYear);
+    if (!isValidDate(sd, sm, sy)) return "none";
+
+    const zodiacEn = getZodiacSignEnglish(sd, sm);
+    const fire = ["Aries", "Leo", "Sagittarius"];
+    const earth = ["Taurus", "Virgo", "Capricorn"];
+    const air = ["Gemini", "Libra", "Aquarius"];
+    const water = ["Pisces", "Cancer", "Scorpio"];
+
+    if (fire.includes(zodiacEn)) return "fire";
+    if (earth.includes(zodiacEn)) return "earth";
+    if (air.includes(zodiacEn)) return "air";
+    if (water.includes(zodiacEn)) return "water";
+    return "none";
+  }, [results.years, formData.startDay, formData.startMonth, formData.startYear]);
 
   // System theme checks
   const [systemIsDark, setSystemIsDark] = useState(false);
@@ -330,6 +390,37 @@ export default function App() {
     media.addEventListener("change", listener);
     return () => media.removeEventListener("change", listener);
   }, []);
+
+  // Trigger Birthday Greeting scrolling listener with intersection observer
+  useEffect(() => {
+    if (!nextBirthdayRef.current || results.years === null || hasTriggeredGreeting) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      if (entry.isIntersecting) {
+        setHasTriggeredGreeting(true);
+        // Pop multiple ascending festive firework flares
+        setTriggerCelebration((prev) => prev + 1);
+        setTimeout(() => {
+          setTriggerCelebration((prev) => prev + 1);
+        }, 350);
+        setTimeout(() => {
+          setTriggerCelebration((prev) => prev + 1);
+        }, 650);
+        
+        // Show Full Screen Festive Overlay
+        setShowGreetingOverlay(true);
+      }
+    }, {
+      root: null,
+      threshold: 0.1, // Trigger when 10% on screen
+    });
+
+    observer.observe(nextBirthdayRef.current);
+    return () => {
+      observer.disconnect();
+    };
+  }, [results.years, hasTriggeredGreeting]);
 
   const isDark = useMemo(() => {
     if (themeMode === 'system') return systemIsDark;
@@ -440,6 +531,7 @@ export default function App() {
       [name]: value,
     }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
+    setHasTriggeredGreeting(false);
   };
 
   const validate = () => {
@@ -522,6 +614,8 @@ export default function App() {
         res = calculateAge(sd, sm, sy, ed, em, ey);
       }
       setResults(res);
+      setTriggerCelebration((prev) => prev + 1);
+      setHasTriggeredGreeting(false);
 
       // Persist state
       localStorage.setItem("age-calculator-date-v2", JSON.stringify(formData));
@@ -549,6 +643,8 @@ export default function App() {
     });
     setResults({ years: null, months: null, days: null });
     localStorage.removeItem("age-calculator-date-v2");
+    setHasTriggeredGreeting(false);
+    setShowGreetingOverlay(false);
     triggerHapticFeedback();
   };
 
@@ -700,6 +796,21 @@ export default function App() {
       style={cssVariables}
       className="min-h-screen w-full relative overflow-x-hidden flex flex-col justify-between transition-colors duration-500"
     >
+      {/* Fireworks particles celebration canvas overlay */}
+      <FireworksCanvas activeToggle={triggerCelebration} accentColor={accent} isDark={isDark} />
+
+      {/* Birthday Greeting festive overlay triggers on scrolling nextBirthday card */}
+      <BirthdayGreetingOverlay
+        isVisible={showGreetingOverlay}
+        onClose={() => setShowGreetingOverlay(false)}
+        lang={lang}
+        zodiacName={derivedStats?.zodiac}
+        daysRemaining={derivedStats?.countdown?.totalDays}
+      />
+
+      {/* Zodiac interactive ambient particle background */}
+      <ZodiacThemeBackground element={activeZodiacElement} enabled={motionEnabled} />
+
       {/* Background drifting glow circles with option to disable */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <AnimatePresence>
@@ -1121,13 +1232,13 @@ export default function App() {
                   <motion.button
                     type="button"
                     onClick={handleReset}
-                    whileHover={{ scale: 1.05, gap: "8px" }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold tracking-wider text-text-muted hover:text-accent uppercase cursor-pointer rounded-lg hover:bg-accent/10 border border-transparent hover:border-accent/10 transition-all pointer-events-auto"
+                    whileHover={{ scale: 1.08, rotate: -15 }}
+                    whileTap={{ scale: 0.92 }}
+                    className="w-14 h-14 md:w-16 md:h-16 rounded-full border border-text-muted/20 hover:border-accent/40 text-text-muted hover:text-accent bg-surface/80 hover:bg-accent/5 flex items-center justify-center cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 group"
                     aria-label={dict.reset}
+                    title={dict.reset}
                   >
-                    <RotateCcw className="w-3.5 h-3.5 text-accent" />
-                    <span className="hidden sm:inline">{dict.reset}</span>
+                    <RotateCcw className="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:rotate-[-45deg] text-accent" />
                   </motion.button>
                 )}
 
@@ -1225,7 +1336,14 @@ export default function App() {
                   </div>
 
                   {/* Next Birthday countdown */}
-                  <div className="bg-background/60 col-span-2 p-4 rounded-xl border border-text-muted/5 flex flex-col justify-between">
+                  <div 
+                    ref={nextBirthdayRef} 
+                    className={`bg-background/60 col-span-2 p-4 rounded-xl border flex flex-col justify-between relative overflow-hidden transition-all duration-700 hover:shadow-md ${
+                      hasTriggeredGreeting 
+                        ? "border-accent/40 shadow-[0_0_15px_rgba(133,77,255,0.15)] bg-accent/5" 
+                        : "border-text-muted/5"
+                    }`}
+                  >
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block mb-1">
                       {dict.nextBirthday}
                     </span>
@@ -1382,6 +1500,7 @@ export default function App() {
                 </div>
 
               </div>
+              <CalendarSyncWidget lang={lang} formData={formData} dict={dict} />
             </motion.div>
           )}
         </AnimatePresence>
