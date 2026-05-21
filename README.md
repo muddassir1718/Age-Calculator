@@ -40,6 +40,13 @@ Welcome to the **Chronicle Age & Time Canvas** — an editorial, highly-curated,
 *   Full color-preset palette with high-contrast accessibility (WCAG 2.1 AA compliant) and true eye-safe Dark & Light modes.
 *   *সমেট্রিক ডিজাইনে নতুন আকর্ষণীয় বৃত্তাকার সাবমিট ও রিসেট বাটন এবং চোখের সুরক্ষায় ডার্ক/লাইট মোড সহ রয়েছে আকর্ষক কালার প্যালেট।*
 
+### 6. **Google Calendar & Profile Hub (গুগল ক্যালেন্ডার ও প্রোফাইল হাব)**
+*   **Profile Center & Quick Calendar Access:** Fully synced Google Account profile icon located on the right side of the logout button, allowing instant access to your Google Calendar center with one tap!
+*   **Centralized Birthday Synchronization & Management:** Streamlined interface where saved birthdays can be managed inside the secure Profile Hub, featuring both **Edit** and **Delete** options with confirmation mechanisms, allowing seamless, dynamic control of your calendars.
+*   **Polished WebView & Redirect Auth Fallbacks:** Automatic detection of mobile Android/iOS WebView wrappers. If standard popups are restricted, the auth system intelligently fails over to continuous redirect callbacks to ensure 100% login success rates inside mobile apps.
+*   **Interactive Android App Guides:** Built-in development blueprint directly inside the sync modal tab displaying copyable, pre-made Kotlin & Java WebView setup codes to bypass Google's "Disallowed User-Agent" lock in under 1 minute!
+*   *গুগল অ্যাকাউন্টের তথ্যাদির পাশে যুক্ত করা হয়েছে প্রোফাইল আইকন হাব, যেখানে ক্লিক করে সরাসরি গুগল ক্যালেন্ডার ওপেন করা যায় এবং সংরক্ষিত জন্মদিনগুলোর বার্ষিক ইমেইল সিঙ্ক কার্যক্রম পরিচালনা করা যায়। এখানে সংরক্ষিত জন্মদিনগুলোর তালিকায় দুটি কার্যকর **এডিট (Edit)** ও **ডিলিট (Delete)** বাটন যুক্ত করা হয়েছে যাতে যেকোনো সময় তথ্য পরিবর্তন বা অপসারণ করা যায়। এছাড়া অ্যান্ড্রয়েড অ্যাপে সরাসরি গুগলে লগইন করার সুবিধার্থে সম্পূর্ণ রিডাইরেক্ট অথেন্টিক্যশন ফলব্যাক (Redirect Auth Fallback) ও অ্যান্ড্রয়েড স্টুডিও গাইডেন্সের কোড যুক্ত করা হয়েছে, যার সাহায্যে যেকোনো মোবাইল অ্যাপে এটি ১০০% কাজ করবে।*
+
 ---
 
 ## 🎯 Target Audience & Benefits (কাদের জন্য উপযোগী ও কি কি উপকার হবে)
@@ -140,13 +147,6 @@ This project is released under the **Apache-2.0 License**. Anyone can fork, modi
 *gmail : muddassirbillah1718@gmail.com
 
 Enjoy exploring your timeline! 🌌✨
-
-
-
-
-
-
-
 
 
 
